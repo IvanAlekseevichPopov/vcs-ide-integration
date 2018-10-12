@@ -1,10 +1,11 @@
+
 // ==UserScript==
 // @name         bitbucket ide linker
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
+// @description  Fast jump to your ide code line from PR
 // @author       Ivan Popov
-// @match        https://bitbucket.org/*/pull-requests/*/diff
+// @match        https://bitbucket.org/*/pull-requests/*
 // @grant        none
 // ==/UserScript==
 
@@ -13,7 +14,9 @@
 
     // Your code here...
     const LINE_CLASS = 'line-numbers';
-    var projectPath = '/home/ivan/projects/cmplat/';
+
+    var projectName = window.location.pathname.split('/')[2];
+    var projectPath = '/home/ipopov/projects/'+ projectName+'/' ;
 
     function getFilePath(diffElement){
         console.log(diffElement);
