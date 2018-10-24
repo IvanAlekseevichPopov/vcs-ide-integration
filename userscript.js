@@ -14,8 +14,12 @@
 
     // Your code here...
     const LINE_CLASS = 'line-numbers';
+    const PROJECTS = {
+        "cmplat-server": "cmplat"
+    };
 
-    var projectName = window.location.pathname.split('/')[2];
+    var gitProjectName = window.location.pathname.split('/')[2];
+    var projectName = PROJECTS[gitProjectName];
     var projectPath = '/home/ipopov/projects/'+ projectName+'/' ;
 
     function getFilePath(diffElement){
