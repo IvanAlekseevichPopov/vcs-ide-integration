@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VCS integration options</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-select.min.css">
+    <link rel="stylesheet" href="fontawesome.min.css">
+</head>
+<body>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col align-content-center">
+            <h3>VCS integration settings</h3>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <form id="options">
+        <div class="form-group">
+            <input type="text" id="applicationUri" list="uris" class="form-control">
+            <datalist id="uris">
+                <option value="phpstorm-uri-handler" label="phpstorm://open?url=file://%f&line=%l">
+                    <!--//TODO more options-->
+            </datalist>
+        </div>
+        <div class="form-group" id="newMappingRow">
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="VCS project name" name="projectName">
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Local machine path" name="projectPath">
+                </div>
+                <div class="col">
+                    <a href="#" class="btn btn-danger deleteMapping">
+                        <i class="far fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <a href="#" id="addMapping" class="btn btn-success" title="add new project mapping">
+            <i class="fas fa-plus"></i>
+        </a>
+        <input type="submit" class="btn btn-primary" title="save current configuration" value="Save">
+    </form>
+</div>
+
+<script src="jquery.min.js"></script>
+<script src="popper.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="bootstrap-select.min.js"></script>
+<script src="fontawesome.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
