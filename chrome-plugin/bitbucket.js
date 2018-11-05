@@ -1,7 +1,7 @@
 class Config {
     constructor() {
-        // super(props);
         let self = this;
+
         chrome.storage.sync.get(['applicationUri', 'mappedProjects'],
             function (options) {
                 console.log(options);
@@ -16,11 +16,22 @@ class Config {
                         }
                     });
                 }
+
+                if (typeof self.applicationUri === 'string' && typeof  self.projectPath === 'string') {
+                    self.callback();
+                }
             });
     }
 
-    isValid() {
-        return null !== this.projectPath && null !== this.applicationUri;
+    whenValid(callback) {
+        this.callback = callback;
+    }
+
+    setIcon(iconPath) {
+        chrome.runtime.sendMessage({
+            action: 'updateIcon',
+            value: iconPath
+        });
     }
 
 }
@@ -68,7 +79,7 @@ class Listener {
         this.listener.stop();
     }
 
-    getFilePath(diffElement) {
+    getFilePath(diffElement) { //TODO filepath extract from complicated view like src/Factory/View/ { → Deal } /SelfCompanyViewFactory.php (94% similar) RENAMED
         console.log(diffElement);
         let path = diffElement.querySelector('.heading').querySelector('.filename').innerHTML.match('\n?.*\n *\n')[0].trim();
         if (~path.indexOf("{")) {
@@ -87,11 +98,10 @@ class Listener {
 }
 
 let config = new Config();
+config.whenValid(function () {
+    console.log(this);
+    this.setIcon("icons/normal64.png");
 
-if (config.isValid()) {
-    let listener = new Listener(config);
+    let listener = new Listener(this);
     listener.startListen();
-} else {
-    //TODO change icon
-    console.log('Have you configured extension?');
-}
+});
