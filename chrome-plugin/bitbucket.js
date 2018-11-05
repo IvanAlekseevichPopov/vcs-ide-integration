@@ -1,84 +1,97 @@
-const LINE_CLASS = '.line-numbers';
+class Config {
+    constructor() {
+        // super(props);
+        let self = this;
+        chrome.storage.sync.get(['applicationUri', 'mappedProjects'],
+            function (options) {
+                console.log(options);
+                self.applicationUri = options.applicationUri;
 
-// class Listener {
-//     uri
-//
-//     constructor() {
-//         //TODO parse config
-//         //TODO set uri
-//         //TODO set project path
-//     }
-//
-//     _
-// }
+                if (Array.isArray(options.mappedProjects)) {
+                    let gitProjectName = window.location.pathname.split('/')[2];
+                    options.mappedProjects.forEach(function (project) {
+                        console.log(project.projectName);
+                        if (project.projectName === gitProjectName) {
+                            self.projectPath = project.projectPath;
+                        }
+                    });
+                }
+            });
+    }
 
-// const PROJECTS = {
-//     "cmplat-server": "cmplat"
-// };
+    isValid() {
+        return null !== this.projectPath && null !== this.applicationUri;
+    }
 
-// let gitProjectName = window.location.pathname.split('/')[2];
-// let projectName = PROJECTS[gitProjectName];
-let projectPath = '';
+}
 
-function getProjectPath() {
-    let gitProjectName = window.location.pathname.split('/')[2];
-    console.log(gitProjectName);
+class Listener {
+    static get LINE_CLASS() {
+        return '.line-numbers';
+    }
 
-    chrome.storage.sync.get(['applicationUri', 'mappedProjects'],
-        function (options) {
-            console.log(options);
+    static get LINE_NUMBER_ATTRIBUTES() {
+        return [
+            'data-tnum',
+            'data-fnum'
+        ];
+    }
 
-            if (Array.isArray(options.mappedProjects)) {
+    static get DIFF_SELECTOR() {
+        return '.diff-container';
+    }
 
-                options.mappedProjects.forEach(function (project) {
-                    console.log(project.projectName);
-                    if (project.projectName === gitProjectName) {
-                        projectPath = project.projectPath;
-                        console.log(projectPath);
-                    }
-                });
+    constructor(config) {
+        this.config = config;
+    }
+
+    startListen() {
+        let self = this;
+        this.listener = $('body').on('click', Listener.LINE_CLASS, function (event) {
+            let lineElement = event.target;
+            let lineNumber = lineElement.getAttribute(Listener.LINE_NUMBER_ATTRIBUTES[0]);
+
+            if (null === lineNumber) {
+                lineNumber = lineElement.getAttribute(Listener.LINE_NUMBER_ATTRIBUTES[1]);
             }
+            console.log(lineNumber);
+
+            let diffElement = lineElement.closest(Listener.DIFF_SELECTOR);
+            let filePath = self.getFilePath(diffElement);
+            console.log(filePath);
+
+            event.target.href = self.generateUrl(filePath, lineNumber);
         });
-}
-
-
-function getFilePath(diffElement) {
-    console.log(diffElement);
-    let path = diffElement.querySelector('.heading').querySelector('.filename').innerHTML.match('\n?.*\n *\n')[0].trim();
-    if (~path.indexOf("{")) {
-        let pathPart = path.substring(0, path.indexOf("{")).trim();
-        let filePart = path.match('→\ (.*)\ }')[1].trim();
-
-        path = pathPart + filePart
     }
 
-    return path;
-}
-
-function generateUrl(filePath, lineNumber) {
-    //TODO get url from config
-    return "phpstorm://open?url=file://" + projectPath + filePath + "&line=" + lineNumber;
-}
-
-getProjectPath();
-
-$('body').on('click', LINE_CLASS, function (event) {
-    // event.preventDefault();
-
-    let lineElement = event.target;
-    console.log('right href');
-    let lineNumber = lineElement.getAttribute('data-tnum');
-    if (null === lineNumber) {
-        lineNumber = lineElement.getAttribute('data-fnum');
+    stopListen() {
+        this.listener.stop();
     }
-    console.log(lineNumber);
 
-    let diffElement = lineElement.closest('.diff-container');
-    let filePath = getFilePath(diffElement);
-    console.log(filePath);
+    getFilePath(diffElement) {
+        console.log(diffElement);
+        let path = diffElement.querySelector('.heading').querySelector('.filename').innerHTML.match('\n?.*\n *\n')[0].trim();
+        if (~path.indexOf("{")) {
+            let pathPart = path.substring(0, path.indexOf("{")).trim();
+            let filePart = path.match('→\ (.*)\ }')[1].trim();
 
-    event.target.href = generateUrl(filePath, lineNumber);
+            path = pathPart + filePart
+        }
 
+        return path;
+    }
 
-    console.log(this);
-});
+    generateUrl(filePath, lineNumber) {
+        return this.config.applicationUri.replace('%f', this.config.projectPath + filePath).replace('%l', lineNumber);
+    }
+}
+
+let config = new Config();
+
+if (config.isValid()) {
+    let listener = new Listener(config);
+    listener.startListen();
+} else {
+    //TODO change icon
+    console.log('Have you configured extension?');
+}
