@@ -59,7 +59,7 @@ function grabMappedProjects(form) {
 
 function grabApplicationUri(form) {
     let rawUri = $(form).find('#applicationUri').val();
-
+    console.log(rawUri);
     //TODO get uri from datalist
 
     // return rawUri;
