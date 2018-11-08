@@ -59,11 +59,15 @@ function grabMappedProjects(form) {
 
 function grabApplicationUri(form) {
     let rawUri = $(form).find('#applicationUri').val();
-    console.log(rawUri);
-    //TODO get uri from datalist
+    let datalist = document.getElementById('application_urls');
 
-    // return rawUri;
-    return 'phpstorm://open?url=file://%f&line=%l';
+    for (let i = 0; i < datalist.options.length; i++) {
+        if(datalist.options[i].value === rawUri) {
+            return datalist.options[i].label;
+        }
+    }
+
+    return rawUri;
 }
 
 // Restore from chrome vault
