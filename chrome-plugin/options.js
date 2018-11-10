@@ -22,7 +22,7 @@ $('#options').submit(function (event) {
     console.log(mappedProjects);
     console.log(applicationUri);
 
-    chrome.storage.sync.set({
+    chrome.storage.local.set({
         mappedProjects: mappedProjects,
         applicationUri: applicationUri
     }, function () {
@@ -73,7 +73,7 @@ function grabApplicationUri(form) {
 // Restore from chrome vault
 function restoreOptions() {
     // Use default value color = 'red' and likesColor = true.
-    chrome.storage.sync.get(['applicationUri', 'mappedProjects'],
+    chrome.storage.local.get(['applicationUri', 'mappedProjects'],
         function (options) {
             console.log(options);
             $('#applicationUri').val(options.applicationUri);

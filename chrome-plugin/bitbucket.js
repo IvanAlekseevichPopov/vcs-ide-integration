@@ -2,7 +2,7 @@ class Config {
     constructor() {
         let self = this;
 
-        chrome.storage.sync.get(['applicationUri', 'mappedProjects'],
+        chrome.storage.local.get(['applicationUri', 'mappedProjects'],
             function (options) {
                 console.log(options);
                 self.applicationUri = options.applicationUri;
@@ -17,9 +17,11 @@ class Config {
                     });
                 }
 
-                if (typeof self.applicationUri === 'string' && typeof  self.projectPath === 'string') {
-                    self.callback();
-                }
+                setTimeout(function () { //TODO remove timeout
+                    if (typeof self.applicationUri === 'string' && typeof  self.projectPath === 'string') {
+                        self.callback();
+                    }
+                }, 500);
             });
     }
 
@@ -99,7 +101,6 @@ class Listener {
 
 let config = new Config();
 config.whenValid(function () {
-    console.log(this);
     this.setIcon("icons/normal64.png");
 
     let listener = new Listener(this);
