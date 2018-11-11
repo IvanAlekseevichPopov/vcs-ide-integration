@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "VCS integration",
+  "version": "1.0",
+  "icons": {
+    "64": "icons/normal64.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [{
+    "js": [
+      "libs/jquery.min.js",
+      "bitbucket.js"
+    ],
+    "matches": ["https://bitbucket.org/*/pull-requests/*"]
+  }],
+  "browser_action": {
+    "default_title": "VCS integration",
+    "default_icon": "icons/disabled64.png"
+  },
+  "options_page": "options.html"
+}
